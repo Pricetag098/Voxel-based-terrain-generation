@@ -1,0 +1,40 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel GenMap
+
+
+#include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise2D.hlsl"
+#include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise3D.hlsl"
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+
+float freq;
+float amp;
+float la;
+float per;
+int octaves;
+uint scale;
+
+RWTexture3D<float> Map;
+
+
+
+[numthreads(8, 8, 8)]
+void GenMap(uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+    float val = 0;
+
+    float f = freq;
+    float a = amp;
+    for (int i = 0; i < octaves; i++)
+    {
+        val += (((SimplexNoise((id.xz / (float)scale) * f) * a) + 1) / 2) * 1 - (id.y / (float)scale);
+        f *= la;
+        a *= per;
+    }
+
+    Map[id.xyz] = val;
+}
+
+
