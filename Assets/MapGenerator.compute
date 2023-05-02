@@ -11,17 +11,35 @@
 float freq;
 float amp;
 float la;
+float3 offset;
 float per;
 int octaves;
 uint scale;
 
-RWTexture3D<float> Map;
+RWStructuredBuffer<float> Map;
 
+int to1D(int x, int y, int z)
+{
+    return (z * scale * scale) + (y * scale) + x;
+}
 
+int3 to3D(int idx)
+{
+    int z = idx / (scale * scale);
+    idx -= (z * scale * scale);
+    int y = idx / scale;
+    int x = idx % scale;
+    return int3 ( x, y, z );
+}
 
-[numthreads(8, 8, 8)]
+[numthreads(256, 1, 1)]
 void GenMap(uint3 id : SV_DispatchThreadID)
 {
+    if (id.x > scale * scale * scale)
+    {
+        return;
+    }
+    float3 coords = to3D(id.x) + offset;
     // TODO: insert actual code here!
     float val = 0;
 
@@ -29,12 +47,12 @@ void GenMap(uint3 id : SV_DispatchThreadID)
     float a = amp;
     for (int i = 0; i < octaves; i++)
     {
-        val += (((SimplexNoise((id.xz / (float)scale) * f) * a) + 1) / 2) * 1 - (id.y / (float)scale);
+        val += (((SimplexNoise((coords.xz / (float)scale) * f) * a) + 1) / 2) * 1 - (coords.y / (float)scale);
         f *= la;
         a *= per;
     }
 
-    Map[id.xyz] = val;
+    Map[id.x] = val;
 }
 
 
