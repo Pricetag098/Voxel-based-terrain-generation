@@ -36,7 +36,7 @@ public class MapGenerator : MonoBehaviour
         mapGenerator.SetInt("octaves", octaves);
         //mapGenerator.SetFloat("cutoff", cutoff);
         mapGenerator.SetInt("scale", size);
-        mapGenerator.Dispatch(kernel, Mathf.CeilToInt((size * size * size) / 256),1,1);
+        mapGenerator.Dispatch(kernel, Mathf.CeilToInt(((size+1) * (size + 1) * (size + 1)) / 256),1,1);
         //buffer.GetData(map);
         //GetComponent<MarchingCubes>().GenMesh(size, map);
         //buffer.Release();

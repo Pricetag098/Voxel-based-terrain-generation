@@ -5,7 +5,7 @@
 
 float _cutoff;
 
-uint scale;
+int scale;
 struct Triangle
 {
     float3 a;
@@ -33,7 +33,7 @@ int to1D(int x, int y, int z)
 [numthreads(8, 8, 8)]
 void Triangulate(uint3 id : SV_DispatchThreadID)
 {
-    if(id.x >= scale || id.y >= scale || id.z >= scale){
+    if(id.x >= scale-1 || id.y >= scale-1 || id.z >= scale-1){
         return;
     }
 

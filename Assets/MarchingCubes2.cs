@@ -48,13 +48,14 @@ public class MarchingCubes2 : MonoBehaviour
 
         //set stuff
         Shader.SetBuffer(0,"points",map);
-
+        Shader.SetInt("scale", size);
+        Shader.SetFloat("_cutoff", cutoff);
         int maxTriCount = (size - 1) * (size - 1) * (size - 1);
-        ComputeBuffer triBuffer = new ComputeBuffer(maxTriCount, 36);
+        ComputeBuffer triBuffer = new ComputeBuffer(maxTriCount, 36,ComputeBufferType.Append);
         ComputeBuffer triCountBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
         triBuffer.SetCounterValue(0);
         Shader.SetBuffer(0, "Tris", triBuffer);
-        Shader.Dispatch(0, Mathf.CeilToInt(size / 8), Mathf.CeilToInt(size / 8), Mathf.CeilToInt(size / 8));
+        Shader.Dispatch(0, Mathf.CeilToInt((size+1) / 8), Mathf.CeilToInt((size + 1) / 8), Mathf.CeilToInt((size + 1) / 8));
 
 
         // Get number of triangles in the triangle buffer
@@ -63,13 +64,14 @@ public class MarchingCubes2 : MonoBehaviour
         triCountBuffer.GetData(triCountArray);
         int numTris = triCountArray[0];
 
-        numTris = maxTriCount;
+        //numTris = maxTriCount;
         Triangle[] tris = new Triangle[numTris];
         triBuffer.GetData(tris,0,0,numTris);
 
         Vector3[] vertices = new Vector3[numTris * 3];
         int[] triangles = new int[numTris * 3];
-        Debug.Log(triangles.Length);
+        
+        //Debug.Log(triangles.Length);
         for(int i = 0; i < numTris; i++)
         {
             for(int j = 0; j < 3; j++)
@@ -78,6 +80,7 @@ public class MarchingCubes2 : MonoBehaviour
                 vertices[i * 3 + j] = tris[i][j];
             }
         }
+        
         mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
