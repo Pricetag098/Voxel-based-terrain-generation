@@ -1,81 +1,87 @@
 
-#pragma kernel PlaceVertex
+#pragma kernel Triangulate
 #include "\Includes\MarchTables.compute"
 
-float _scale;
+
 float _cutoff;
-RWTexture3D<float> Map;
+
 uint scale;
-RWStructuredBuffer<float3> Vertices;
-RWStructuredBuffer<int> Tris;
-
-static float3 nodePositions[12] =
+struct Triangle
 {
-    float3(.5f, 0, 0),
-    float3(1, 0, .5f),
-    float3(.5f, 0, 1),
-    float3(0, 0, .5f),
-    float3(.5f, 1, 0),
-    float3(1, 1, .5f),
-    float3(.5f, 1, 1),
-    float3(0, 1, .5f),
-    float3(0, .5f, 0),
-    float3(1, .5f, 0),
-    float3(1, .5f, 1),
-    float3(0, .5f, 1)
-
+    float3 a;
+    float3 b;
+    float3 c;
 };
 
 
+RWStructuredBuffer<float4> points;
+AppendStructuredBuffer<Triangle> Tris;
+
+
+
+float3 interpolateVerts(float4 v1, float4 v2) {
+    float t = (_cutoff - v1.w) / (v2.w - v1.w);
+    return v1.xyz + t * (v2.xyz-v1.xyz);
+}
 
 int to1D(int x, int y, int z)
 {
     return (z * (scale) * (scale)) + (y * (scale)) + x;
 }
+
+
 [numthreads(8, 8, 8)]
-void PlaceVertex(uint3 id : SV_DispatchThreadID)
+void Triangulate(uint3 id : SV_DispatchThreadID)
 {
-    if (id.x >= scale || id.y >= scale || id.z >= scale)
-    {
+    if(id.x >= scale || id.y >= scale || id.z >= scale){
         return;
     }
-    
-    
-    int cubeindex = 0;
-    if (Map[id.xyz + int3(0, 0, 0)] < _cutoff)
-        cubeindex |= 1;                 
-    if (Map[id.xyz + int3(1, 0, 0)] < _cutoff)
-        cubeindex |= 2;                 
-    if (Map[id.xyz + int3(1, 0, 1)] < _cutoff)
-        cubeindex |= 4;                 
-    if (Map[id.xyz + int3(0, 0, 1)] < _cutoff)
-        cubeindex |= 8;                 
-    if (Map[id.xyz + int3(0, 1, 0)] < _cutoff)
-        cubeindex |= 16;                
-    if (Map[id.xyz + int3(1, 1, 0)] < _cutoff)
-        cubeindex |= 32;                
-    if (Map[id.xyz + int3(1, 1, 1)] < _cutoff)
-        cubeindex |= 64;                
-    if (Map[id.xyz + int3(0, 1, 1)] < _cutoff)
-        cubeindex |= 128;
-    //cubeindex = 4;
-    
-    int triTableVal[16] = triangulation[cubeindex];
-    
-    for (int i = 0; i < 12; i++)
+
+    float4 cubeCorners[8] = 
     {
-        Vertices[(to1D(id.x, id.y, id.z) * 12) + i] = (nodePositions[i] + float3((float)id.x, (float)id.y, (float)id.z)) * _scale;
-    }
-    
-    for (int j = 0; j < 16; j++)
+        points[to1D(id.x    ,id.y    ,id.z    )],
+        points[to1D(id.x + 1,id.y    ,id.z    )],
+        points[to1D(id.x + 1,id.y    ,id.z + 1)],
+        points[to1D(id.x    ,id.y    ,id.z + 1)],
+        points[to1D(id.x    ,id.y + 1,id.z    )],
+        points[to1D(id.x + 1,id.y + 1,id.z    )],
+        points[to1D(id.x + 1,id.y + 1,id.z + 1)],
+        points[to1D(id.x    ,id.y + 1,id.z + 1)]
+    };
+
+    int cubeIndex = 0;
+    if(cubeCorners[0].w < _cutoff) cubeIndex |= 1;
+    if(cubeCorners[1].w < _cutoff) cubeIndex |= 2;
+    if(cubeCorners[2].w < _cutoff) cubeIndex |= 4;
+    if(cubeCorners[3].w < _cutoff) cubeIndex |= 8;
+    if(cubeCorners[4].w < _cutoff) cubeIndex |= 16;
+    if(cubeCorners[5].w < _cutoff) cubeIndex |= 32;
+    if(cubeCorners[6].w < _cutoff) cubeIndex |= 64;
+    if(cubeCorners[7].w < _cutoff) cubeIndex |= 128;
+
+    for(int i = 0; triangulation[cubeIndex][i] != -1; i+=3)
     {
-        int triIndex = triTableVal[j];
-        if (triIndex == -1)
-            triIndex = 0;
-        Tris[to1D(id.x, id.y, id.z)];
+        int    point0a = cornerIndexAFromEdge[triangulation[cubeIndex][i]];
+        int    point0b = cornerIndexAFromEdge[triangulation[cubeIndex][i]];
+        float3 point0 = interpolateVerts(cubeCorners[point0a],cubeCorners[point0b]);
+
+        int    point1a = cornerIndexAFromEdge[triangulation[cubeIndex][i+1]];
+        int    point1b = cornerIndexAFromEdge[triangulation[cubeIndex][i+1]];
+        float3 point1 = interpolateVerts(cubeCorners[point1a],cubeCorners[point1b]);
+
+        int    point2a = cornerIndexAFromEdge[triangulation[cubeIndex][i+2]];
+        int    point2b = cornerIndexAFromEdge[triangulation[cubeIndex][i+2]];
+        float3 point2 = interpolateVerts(cubeCorners[point2a],cubeCorners[point2b]);
+
+        Triangle t;
+        t.a = point0;
+        t.b = point1;
+        t.c = point2;
+
+        Tris.Append(t);
 
     }
-    
+
 
 }
 

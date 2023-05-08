@@ -10,9 +10,9 @@ public class MapGenerator : MonoBehaviour
     public Vector3 offset;
     public float la, per;
     public int octaves = 1;
-    public float[] map;
+    public Vector4[] map;
     public ComputeShader mapGenerator;
-
+    ComputeBuffer buffer;
     public void GenMap()
     {
         //map = new RenderTexture(size, size, 0, RenderTextureFormat.RFloat);
@@ -21,11 +21,11 @@ public class MapGenerator : MonoBehaviour
 
         //map.enableRandomWrite = true;
         //map.Create();
-        map = new float[size * size * size];
+        map = new Vector4[size * size * size];
         int kernel = 
         mapGenerator.FindKernel("GenMap");
         //mapGenerator.SetTexture(kernel, "Map", map);
-        ComputeBuffer buffer = new ComputeBuffer(map.Length, 4);
+        buffer = new ComputeBuffer(map.Length, 4 * 4);
         buffer.SetData(map);
         mapGenerator.SetBuffer(kernel,"Map", buffer);
         mapGenerator.SetFloat("freq", freq);
@@ -37,17 +37,28 @@ public class MapGenerator : MonoBehaviour
         //mapGenerator.SetFloat("cutoff", cutoff);
         mapGenerator.SetInt("scale", size);
         mapGenerator.Dispatch(kernel, Mathf.CeilToInt((size * size * size) / 256),1,1);
-        buffer.GetData(map);
+        //buffer.GetData(map);
         //GetComponent<MarchingCubes>().GenMesh(size, map);
-        buffer.Release();
+        //buffer.Release();
+        buffer.GetData(map);
     }
 
     public void GenMesh()
     {
-        MarchingCubes marchingCubes = GetComponent<MarchingCubes>();
-        if(marchingCubes != null)
+        
+        MarchingCubes2 marchingCubes2 = GetComponent<MarchingCubes2>();
+        if(marchingCubes2 != null)
         {
-            marchingCubes.run(map,size);
+            marchingCubes2.run(buffer,size);
+        }
+        else
+        {
+            MarchingCubes marchingCubes = GetComponent<MarchingCubes>();
+            if(marchingCubes != null)
+            {
+                buffer.GetData(map);
+                marchingCubes.run(map,size);
+            }
         }
     }
     

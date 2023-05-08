@@ -13,10 +13,11 @@ float amp;
 float la;
 float3 offset;
 float per;
+float size;
 int octaves;
 uint scale;
 
-RWStructuredBuffer<float> Map;
+RWStructuredBuffer<float4> Map;
 
 int to1D(int x, int y, int z)
 {
@@ -52,7 +53,7 @@ void GenMap(uint3 id : SV_DispatchThreadID)
         a *= per;
     }
 
-    Map[id.x] = val;
+    Map[id.x] = float4(coords.xyz,val);
 }
 
 

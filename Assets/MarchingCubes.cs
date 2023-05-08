@@ -30,7 +30,7 @@ public class MarchingCubes : MonoBehaviour
 
     }
 
-    public void run(float[] map, int size)
+    public void run(Vector4[] map, int size)
     {
         cg = new CubeGrid(map,size, cubeSize);
         updateMesh();
@@ -145,7 +145,7 @@ public class MarchingCubes : MonoBehaviour
     public class CubeGrid
     {
         public Cube[,,] cubes;
-        public float[] floatMap;
+        public Vector4[] floatMap;
         public int size;
         public float scale;
         float cutOff = .5f;
@@ -209,14 +209,14 @@ public class MarchingCubes : MonoBehaviour
                     {
                         cubes[x, y, z] = new Cube();
                         Cube cube = cubes[x, y, z];
-                        cube.controlNodes[0].active = floatMap[to1D(x, y, z)] > cutOff;
-                        cube.controlNodes[1].active = floatMap[to1D(x + 1, y, z)] > cutOff;
-                        cube.controlNodes[2].active = floatMap[to1D(x + 1, y, z + 1)] > cutOff;
-                        cube.controlNodes[3].active = floatMap[to1D(x, y, z + 1)] > cutOff;
-                        cube.controlNodes[4].active = floatMap[to1D(x, y + 1, z)] > cutOff;
-                        cube.controlNodes[5].active = floatMap[to1D(x + 1, y + 1, z)] > cutOff;
-                        cube.controlNodes[6].active = floatMap[to1D(x + 1, y + 1, z + 1)] > cutOff;
-                        cube.controlNodes[7].active = floatMap[to1D(x, y + 1, z + 1)] > cutOff;
+                        cube.controlNodes[0].active = floatMap[to1D(x, y, z)].w > cutOff;
+                        cube.controlNodes[1].active = floatMap[to1D(x + 1, y, z)].w > cutOff;
+                        cube.controlNodes[2].active = floatMap[to1D(x + 1, y, z + 1)].w > cutOff;
+                        cube.controlNodes[3].active = floatMap[to1D(x, y, z + 1)].w > cutOff;
+                        cube.controlNodes[4].active = floatMap[to1D(x, y + 1, z)].w > cutOff;
+                        cube.controlNodes[5].active = floatMap[to1D(x + 1, y + 1, z)].w > cutOff;
+                        cube.controlNodes[6].active = floatMap[to1D(x + 1, y + 1, z + 1)].w > cutOff;
+                        cube.controlNodes[7].active = floatMap[to1D(x, y + 1, z + 1)].w > cutOff;
                                                                
                         int cubeVal = cube.evaluate();
                         for (int i = 0; triTable[cubeVal, i] != -1; i += 3)
@@ -479,7 +479,7 @@ public class MarchingCubes : MonoBehaviour
 
 
 
-        public CubeGrid(float[] map,int _size, float cubeSize)
+        public CubeGrid(Vector4[] map,int _size, float cubeSize)
         {
             size = _size;
             scale = cubeSize;
@@ -492,40 +492,41 @@ public class MarchingCubes : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
-        return;
-        if (cg == null)
-        {
-            return;
-        }
-        for (int x = 0; x < cg.cubes.GetLength(0) - 1; x++)
-        {
-            for (int y = 0; y < cg.cubes.GetLength(1) - 1; y++)
-            {
-                for (int z = 0; z < cg.cubes.GetLength(2) - 1; z++)
-                {
-                    Cube testcube = cg.cubes[x, y, z];
-                    for (int i = 0; i < 8; i++)
-                    {
-                        Gizmos.color = testcube.controlNodes[i].active ? Color.green : Color.red;
-                        Gizmos.DrawWireSphere((testcube.controlNodes[i].position * cubeSize) + new Vector3(x, y, z), .15f);
-                    }
-                    for (int i = 0; i < 12; i++)
-                    {
-                        if (testnode == i)
-                        {
-                            Gizmos.color = Color.blue;
-                            Gizmos.DrawWireSphere((testcube.nodes[i].position * cubeSize) + new Vector3(x, y, z), .11f);
-                        }
-                        else
-                        {
-                            Gizmos.color = Color.magenta;
-                            Gizmos.DrawWireSphere((testcube.nodes[i].position * cubeSize) + new Vector3(x, y, z), .10f);
-                        }
-                    }
+        //return;
 
-                }
-            }
-        }
+        //if (cg == null)
+        //{
+        //    return;
+        //}
+        //for (int x = 0; x < cg.cubes.GetLength(0) - 1; x++)
+        //{
+        //    for (int y = 0; y < cg.cubes.GetLength(1) - 1; y++)
+        //    {
+        //        for (int z = 0; z < cg.cubes.GetLength(2) - 1; z++)
+        //        {
+        //            Cube testcube = cg.cubes[x, y, z];
+        //            for (int i = 0; i < 8; i++)
+        //            {
+        //                Gizmos.color = testcube.controlNodes[i].active ? Color.green : Color.red;
+        //                Gizmos.DrawWireSphere((testcube.controlNodes[i].position * cubeSize) + new Vector3(x, y, z), .15f);
+        //            }
+        //            for (int i = 0; i < 12; i++)
+        //            {
+        //                if (testnode == i)
+        //                {
+        //                    Gizmos.color = Color.blue;
+        //                    Gizmos.DrawWireSphere((testcube.nodes[i].position * cubeSize) + new Vector3(x, y, z), .11f);
+        //                }
+        //                else
+        //                {
+        //                    Gizmos.color = Color.magenta;
+        //                    Gizmos.DrawWireSphere((testcube.nodes[i].position * cubeSize) + new Vector3(x, y, z), .10f);
+        //                }
+        //            }
+
+        //        }
+        //    }
+        //}
 
     }
 
