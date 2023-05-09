@@ -10,12 +10,14 @@ public class MarchingCubes2 : MonoBehaviour
     int size;
     Mesh mesh;
     MeshFilter meshFilter;
+    MeshCollider meshCollider;
     // Start is called before the first frame update
 
 
-    private void Start()
+    private void Awake()
     {
         meshFilter = GetComponent<MeshFilter>();
+        meshCollider = GetComponent<MeshCollider>();
     }
 
     struct Triangle 
@@ -82,15 +84,17 @@ public class MarchingCubes2 : MonoBehaviour
         }
         
         mesh = new Mesh();
+
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
-
+        meshCollider.sharedMesh = mesh;
         triBuffer.Dispose();
         triCountBuffer.Dispose();
-        map.Dispose();
+        //map.Dispose();
     }
     
 }

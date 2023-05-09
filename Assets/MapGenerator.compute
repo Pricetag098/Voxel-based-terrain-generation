@@ -33,10 +33,10 @@ int3 to3D(int idx)
     return int3 ( x, y, z );
 }
 
-[numthreads(256, 1, 1)]
+[numthreads(8, 8, 8)]
 void GenMap(uint3 id : SV_DispatchThreadID)
 {
-    if (id.x > scale * scale * scale)
+    if (id.x >= scale || id.y >= scale || id.y >= scale)
     {
         return;
     }
@@ -53,7 +53,7 @@ void GenMap(uint3 id : SV_DispatchThreadID)
         a *= per;
     }
 
-    Map[id.x] = float4(coords.xyz,val);
+    Map[to1D(id.x, id.y, id.z)] = float4(coords.xyz - offset, val);
 }
 
 

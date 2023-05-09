@@ -1,0 +1,44 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel GenMap
+
+
+
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+
+float3 pos;
+uint scale;
+
+RWStructuredBuffer<float4> Map;
+
+int to1D(int x, int y, int z)
+{
+    return (z * scale * scale) + (y * scale) + x;
+}
+
+int3 to3D(int idx)
+{
+    int z = idx / (scale * scale);
+    idx -= (z * scale * scale);
+    int y = idx / scale;
+    int x = idx % scale;
+    return int3 (x, y, z);
+}
+
+[numthreads(8, 8, 8)]
+void GenMap(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= scale || id.y >= scale ||id.y >= scale)
+    {
+        return;
+    }
+    float3 coords = Map[id.x].xyz;
+    // TODO: insert actual code here!
+    float val = Map[id.x].w;
+    val += 1/distance(coords, pos);
+
+    Map[to1D(id.x,id.y,id.z)] = float4(coords.xyz, val);
+}
+
+

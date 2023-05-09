@@ -4,8 +4,8 @@
 
 
 float _cutoff;
-
-int scale;
+//float size = 2.0f;
+uint scale;
 struct Triangle
 {
     float3 a;
@@ -50,33 +50,35 @@ void Triangulate(uint3 id : SV_DispatchThreadID)
     };
 
     int cubeIndex = 0;
-    if(cubeCorners[0].w < _cutoff) cubeIndex |= 1;
-    if(cubeCorners[1].w < _cutoff) cubeIndex |= 2;
-    if(cubeCorners[2].w < _cutoff) cubeIndex |= 4;
-    if(cubeCorners[3].w < _cutoff) cubeIndex |= 8;
-    if(cubeCorners[4].w < _cutoff) cubeIndex |= 16;
-    if(cubeCorners[5].w < _cutoff) cubeIndex |= 32;
-    if(cubeCorners[6].w < _cutoff) cubeIndex |= 64;
-    if(cubeCorners[7].w < _cutoff) cubeIndex |= 128;
+    if(cubeCorners[0].w > _cutoff) cubeIndex |= 1;
+    if(cubeCorners[1].w > _cutoff) cubeIndex |= 2;
+    if(cubeCorners[2].w > _cutoff) cubeIndex |= 4;
+    if(cubeCorners[3].w > _cutoff) cubeIndex |= 8;
+    if(cubeCorners[4].w > _cutoff) cubeIndex |= 16;
+    if(cubeCorners[5].w > _cutoff) cubeIndex |= 32;
+    if(cubeCorners[6].w > _cutoff) cubeIndex |= 64;
+    if(cubeCorners[7].w > _cutoff) cubeIndex |= 128;
 
     for(int i = 0; triangulation[cubeIndex][i] != -1; i+=3)
     {
         int    point0a = cornerIndexAFromEdge[triangulation[cubeIndex][i]];
-        int    point0b = cornerIndexAFromEdge[triangulation[cubeIndex][i]];
+        int    point0b = cornerIndexBFromEdge[triangulation[cubeIndex][i]];
         float3 point0 = interpolateVerts(cubeCorners[point0a],cubeCorners[point0b]);
 
         int    point1a = cornerIndexAFromEdge[triangulation[cubeIndex][i+1]];
-        int    point1b = cornerIndexAFromEdge[triangulation[cubeIndex][i+1]];
+        int    point1b = cornerIndexBFromEdge[triangulation[cubeIndex][i+1]];
         float3 point1 = interpolateVerts(cubeCorners[point1a],cubeCorners[point1b]);
 
         int    point2a = cornerIndexAFromEdge[triangulation[cubeIndex][i+2]];
-        int    point2b = cornerIndexAFromEdge[triangulation[cubeIndex][i+2]];
+        int    point2b = cornerIndexBFromEdge[triangulation[cubeIndex][i+2]];
         float3 point2 = interpolateVerts(cubeCorners[point2a],cubeCorners[point2b]);
 
+        
+
         Triangle t;
-        t.a = point0;
-        t.b = point1;
-        t.c = point2;
+        t.a = point0.xyz;
+        t.b = point1.xyz;
+        t.c = point2.xyz;
 
         Tris.Append(t);
 
