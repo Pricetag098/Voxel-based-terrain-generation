@@ -64,5 +64,9 @@ public class MapGenerator : MonoBehaviour
             }
         }
     }
+    public void DisposeBuffers()
+    {
+        buffer.Dispose();
+    }
     
 }

@@ -30,15 +30,15 @@ public class MapEditor : MonoBehaviour
                 List<Chunk> chunks = new List<Chunk>();
                 for(int x = -1; x < 1; x++)
                 {
-                    if (x + hitChunk.chunkIndex.x < 0 || x + hitChunk.chunkIndex.x >= size)
+                    if (x + hitChunk.chunkIndex.x < 0 || !(x + hitChunk.chunkIndex.x < size))
                         continue;
                     for (int y = -1; y < 1; y++)
                     {
-                        if (y + hitChunk.chunkIndex.y < 0 || y + hitChunk.chunkIndex.y >= size)
+                        if (y + hitChunk.chunkIndex.y < 0 || !(y + hitChunk.chunkIndex.y < size))
                             continue;
                         for (int z = -1; z < 1; z++)
                         {
-                            if (z + hitChunk.chunkIndex.z < 0 || z + hitChunk.chunkIndex.z >= size)
+                            if (z + hitChunk.chunkIndex.z < 0 || !(z + hitChunk.chunkIndex.z < size))
                                 continue;
                             chunks.Add(chunkManager.GetChunk(hitChunk.chunkIndex + new Vector3Int(x, y, z)));
                         }

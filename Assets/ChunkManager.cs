@@ -30,6 +30,7 @@ public class ChunkManager : MonoBehaviour
                 }
             }
         }
+        mapGenerator.DisposeBuffers();
     }
 
     async Task PlaceChunk(int x, int y, int z)
