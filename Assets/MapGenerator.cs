@@ -21,42 +21,18 @@ public class MapGenerator : MonoBehaviour
     }
     public void GenMap()
     {
-        //map = new RenderTexture(size, size, 0, RenderTextureFormat.RFloat);
-        //map.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
-        //map.volumeDepth = size;
-
-        //map.enableRandomWrite = true;
-        //map.Create();
-        //map = new Vector4[size * size * size];
-        int kernel = 
-        mapGenerator.FindKernel("GenMap");
-        //mapGenerator.SetTexture(kernel, "Map", map);
-        
-        buffer.SetData(map);
-        mapGenerator.SetBuffer(kernel,"Map", buffer);
-        mapGenerator.SetFloat("freq", freq);
-        mapGenerator.SetFloat("amp", amp);
-        mapGenerator.SetFloat("la", la);
-        mapGenerator.SetVector("offset", localOffset);
-        mapGenerator.SetFloat("per", per);
-        mapGenerator.SetInt("octaves", octaves);
-        //mapGenerator.SetFloat("cutoff", cutoff);
-        mapGenerator.SetInt("scale", size);
-        mapGenerator.Dispatch(kernel, Mathf.CeilToInt(size / 8), Mathf.CeilToInt(size / 8), Mathf.CeilToInt(size / 8));
-        //buffer.GetData(map);
-        //GetComponent<MarchingCubes>().GenMesh(size, map);
-        //buffer.Release();
-        //buffer.GetData(map);
-        
+        map = new Vector4[size * size * size];
+        buffer = GetMap(localOffset);
+        buffer.GetData(map);
     }
 
     public ComputeBuffer GetMap(Vector3 offset)
     {
+        map = new Vector4[size * size * size];
         int kernel =
         mapGenerator.FindKernel("GenMap");
-        ComputeBuffer mapBuffer = new ComputeBuffer((size) * size * size, 4 * 4);
-        mapBuffer.SetData(map);
-        mapGenerator.SetBuffer(kernel, "Map", mapBuffer);
+        buffer.SetData(map);
+        mapGenerator.SetBuffer(kernel, "Map", buffer);
         mapGenerator.SetFloat("freq", freq);
         mapGenerator.SetFloat("amp", amp);
         mapGenerator.SetFloat("la", la);
@@ -65,9 +41,9 @@ public class MapGenerator : MonoBehaviour
         mapGenerator.SetInt("octaves", octaves);
         //mapGenerator.SetFloat("cutoff", cutoff);
         mapGenerator.SetInt("scale", size);
-        mapGenerator.Dispatch(kernel, Mathf.CeilToInt(((size + 1) * (size + 1) * (size + 1)) / 256), 1, 1);
-        
-        return mapBuffer;
+        mapGenerator.Dispatch(kernel, Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
+
+        return buffer;
     }
 
     public void GenMesh()

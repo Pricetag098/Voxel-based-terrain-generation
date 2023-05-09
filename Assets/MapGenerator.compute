@@ -40,7 +40,7 @@ void GenMap(uint3 id : SV_DispatchThreadID)
     {
         return;
     }
-    float3 coords = to3D(id.x) + offset;
+    float3 coords = (float3)id.xyz + offset;
     // TODO: insert actual code here!
     float val = 0;
 

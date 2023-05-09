@@ -51,8 +51,8 @@ public class MapEditor : MonoBehaviour
                     shader.SetBuffer(0, "Map", mapBuffer);
                     shader.SetVector("pos", hit.point - chunk.transform.position);
                     shader.SetInt("scale", size);
-                    shader.Dispatch(0, Mathf.CeilToInt((size + 1) / 8), Mathf.CeilToInt((size + 1) / 8), Mathf.CeilToInt((size + 1) / 8));
-                    //chunk.SetMap(mapBuffer, size);
+                    shader.Dispatch(0, Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
+                    chunk.SetMap(mapBuffer, size);
                 }
                 
                 

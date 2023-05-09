@@ -18,7 +18,7 @@ public class ChunkManager : MonoBehaviour
     {
         mapGenerator = GetComponent<MapGenerator>();
         chunks = new Chunk[size.x, size.y, size.z];
-        
+        mapGenerator.size = chunkSize;
         for(int x = 0; x < size.x; x++)
         {
             for( int y = 0; y < size.y; y++)

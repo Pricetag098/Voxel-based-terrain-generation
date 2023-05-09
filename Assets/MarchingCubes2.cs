@@ -57,7 +57,7 @@ public class MarchingCubes2 : MonoBehaviour
         ComputeBuffer triCountBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
         triBuffer.SetCounterValue(0);
         Shader.SetBuffer(0, "Tris", triBuffer);
-        Shader.Dispatch(0, Mathf.CeilToInt((size+1) / 8), Mathf.CeilToInt((size + 1) / 8), Mathf.CeilToInt((size + 1) / 8));
+        Shader.Dispatch(0, Mathf.CeilToInt((float)(size+1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
 
 
         // Get number of triangles in the triangle buffer
