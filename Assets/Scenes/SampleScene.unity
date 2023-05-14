@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 161128585}
   - component: {fileID: 161128584}
   - component: {fileID: 161128583}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chunks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -381,13 +381,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb5f95c8ed3a93c48a82daaedb10058c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   shader: {fileID: 7200000, guid: 5250e11a751e7d84f87b2d061cf37775, type: 3}
   chunkManager: {fileID: 161128584}
+  Distance: 5
+  map:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,7 +419,7 @@ GameObject:
   - component: {fileID: 2168060541472296484}
   - component: {fileID: 2168060541472296490}
   - component: {fileID: 2168060541472296492}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Manual
   m_TagString: Untagged
   m_Icon: {fileID: 0}

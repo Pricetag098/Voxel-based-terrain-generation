@@ -7,6 +7,8 @@ public class MapEditor : MonoBehaviour
 {
     [SerializeField]ComputeShader shader;
     public ChunkManager chunkManager;
+    public float Distance;
+    public LayerMask map;
     ComputeBuffer mapBuffer;
     int size;
     // Start is called before the first frame update
@@ -28,28 +30,18 @@ public class MapEditor : MonoBehaviour
                 Chunk hitChunk = hit.collider.gameObject.GetComponent<Chunk>();
                 
                 List<Chunk> chunks = new List<Chunk>();
-                for(int x = -1; x < 1; x++)
-                {
-                    if (x + hitChunk.chunkIndex.x < 0 || !(x + hitChunk.chunkIndex.x < size))
-                        continue;
-                    for (int y = -1; y < 1; y++)
-                    {
-                        if (y + hitChunk.chunkIndex.y < 0 || !(y + hitChunk.chunkIndex.y < size))
-                            continue;
-                        for (int z = -1; z < 1; z++)
-                        {
-                            if (z + hitChunk.chunkIndex.z < 0 || !(z + hitChunk.chunkIndex.z < size))
-                                continue;
-                            chunks.Add(chunkManager.GetChunk(hitChunk.chunkIndex + new Vector3Int(x, y, z)));
-                        }
-                    }
-                }
+                Collider[] colliders = Physics.OverlapSphere(hit.point,Distance,map);
+                foreach (Collider collider in colliders)
+				{
+                    chunks.Add(collider.GetComponent<Chunk>());
+				}
                 
                 foreach(Chunk chunk in chunks)
                 {
                     mapBuffer.SetData(chunk.map);
                     shader.SetBuffer(0, "Map", mapBuffer);
                     shader.SetVector("pos", hit.point - chunk.transform.position);
+                    shader.SetFloat("dist",Distance);
                     shader.SetInt("scale", size);
                     shader.Dispatch(0, Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
                     chunk.SetMap(mapBuffer, size);

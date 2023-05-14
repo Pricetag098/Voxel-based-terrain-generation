@@ -8,6 +8,7 @@
 // with cs.SetTexture
 
 float3 pos;
+float dist;
 uint scale;
 
 RWStructuredBuffer<float4> Map;
@@ -33,12 +34,15 @@ void GenMap(uint3 id : SV_DispatchThreadID)
     {
         return;
     }
-    float3 coords = Map[id.x].xyz;
+    float3 coords = Map[to1D(id.x,id.y,id.z)].xyz;
     // TODO: insert actual code here!
-    float val = Map[id.x].w;
-    val += 1/distance(coords, pos);
+    float val = Map[to1D(id.x, id.y, id.z)].w;
+    if (distance(coords, pos) < dist)
+    {
+        val += 1/ distance(coords, pos);
+    }
 
-    Map[to1D(id.x,id.y,id.z)] = float4(coords.xyz, val);
+    Map[to1D(id.x, id.y, id.z)] = float4(coords.xyz, val);
 }
 
 

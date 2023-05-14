@@ -37,6 +37,7 @@ public class ChunkManager : MonoBehaviour
     {
         GameObject chunkGo = Instantiate(chunkPrefab, transform);
         chunkGo.transform.position = new Vector3(x, y, z) * offset + baseOffset;
+        chunkGo.layer = gameObject.layer;
         Chunk chunk = chunkGo.GetComponent<Chunk>();
         chunk.chunkIndex = new Vector3Int(x, y, z);
         chunk.SetMap(mapGenerator.GetMap(new Vector3(x, y, z) * offset + baseOffset), chunkSize);
