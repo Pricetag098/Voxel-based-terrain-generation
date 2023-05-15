@@ -6,7 +6,9 @@ using UnityEngine;
 public class ChunkManager : MonoBehaviour
 {
     [SerializeField] GameObject chunkPrefab;
-    Chunk[,,] chunks;
+    
+
+    Dictionary<Vector3Int, RenderTexture> maps;
     public float offset;
     public Vector3 baseOffset;
     public int chunkSize;
@@ -14,10 +16,10 @@ public class ChunkManager : MonoBehaviour
     MapGenerator mapGenerator;
     
     // Start is called before the first frame update
-    async void Start()
+    void Start()
     {
         mapGenerator = GetComponent<MapGenerator>();
-        chunks = new Chunk[size.x, size.y, size.z];
+        //chunks = new Chunk[size.x, size.y, size.z];
         mapGenerator.size = chunkSize;
         for(int x = 0; x < size.x; x++)
         {
@@ -25,7 +27,7 @@ public class ChunkManager : MonoBehaviour
             {
                 for(int z = 0; z < size.z; z++)
                 {
-                    await PlaceChunk(x, y, z);
+                    PlaceChunk(x, y, z);
                     
                 }
             }
@@ -40,8 +42,9 @@ public class ChunkManager : MonoBehaviour
         chunkGo.layer = gameObject.layer;
         Chunk chunk = chunkGo.GetComponent<Chunk>();
         chunk.chunkIndex = new Vector3Int(x, y, z);
-        chunk.SetMap(mapGenerator.GetMap(new Vector3(x, y, z) * offset + baseOffset), chunkSize);
-        chunks[x, y, z] = chunk;
+        chunk.map = mapGenerator.GetMap(new Vector3(x, y, z) * offset + baseOffset);
+        chunk.UpdateMap(chunkSize);
+        maps[chunk.chunkIndex] = chunk.map;
         await Task.CompletedTask;
     }
 
@@ -50,8 +53,5 @@ public class ChunkManager : MonoBehaviour
     {
         
     }
-    public Chunk GetChunk(Vector3Int index)
-    {
-        return chunks[index.x,index.y,index.z];
-    }
+    
 }

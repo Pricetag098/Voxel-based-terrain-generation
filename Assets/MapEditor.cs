@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 
 public class MapEditor : MonoBehaviour
@@ -8,14 +10,15 @@ public class MapEditor : MonoBehaviour
     [SerializeField]ComputeShader shader;
     public ChunkManager chunkManager;
     public float Distance;
-    public LayerMask map;
-    ComputeBuffer mapBuffer;
+    public float power = 1;
+    public LayerMask map,mapEditCollider;
+    
     int size;
     // Start is called before the first frame update
     void Start()
     {
         size = chunkManager.GetComponent<MapGenerator>().size;
-        mapBuffer = new ComputeBuffer((size) * size * size, 4 * 4);
+        
     }
 
     // Update is called once per frame
@@ -25,30 +28,64 @@ public class MapEditor : MonoBehaviour
         {
             RaycastHit hit;
             
-            if(Physics.Raycast(transform.position, transform.forward, out hit))
+            if(Physics.Raycast(transform.position, transform.forward, out hit,float.PositiveInfinity,map))
             {
                 Chunk hitChunk = hit.collider.gameObject.GetComponent<Chunk>();
                 
                 List<Chunk> chunks = new List<Chunk>();
-                Collider[] colliders = Physics.OverlapSphere(hit.point,Distance,map);
+                Collider[] colliders = Physics.OverlapSphere(hit.point,Distance,mapEditCollider);
                 foreach (Collider collider in colliders)
 				{
-                    chunks.Add(collider.GetComponent<Chunk>());
+                    
+                    chunks.Add(collider.GetComponentInParent<Chunk>());
 				}
                 
                 foreach(Chunk chunk in chunks)
                 {
-                    mapBuffer.SetData(chunk.map);
-                    shader.SetBuffer(0, "Map", mapBuffer);
+                    
+                    shader.SetTexture(0, "Map", chunk.map);
                     shader.SetVector("pos", hit.point - chunk.transform.position);
                     shader.SetFloat("dist",Distance);
+                    shader.SetFloat("power", power);
                     shader.SetInt("scale", size);
                     shader.Dispatch(0, Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
-                    chunk.SetMap(mapBuffer, size);
+                    chunk.UpdateMap(size);
                 }
                 
                 
             }
         }
+        if (Input.GetMouseButton(1))
+        {
+            RaycastHit hit;
+
+            if (Physics.Raycast(transform.position, transform.forward, out hit, float.PositiveInfinity, map))
+            {
+                Chunk hitChunk = hit.collider.gameObject.GetComponent<Chunk>();
+
+                List<Chunk> chunks = new List<Chunk>();
+                Collider[] colliders = Physics.OverlapSphere(hit.point, Distance, mapEditCollider);
+                foreach (Collider collider in colliders)
+                {
+
+                    chunks.Add(collider.GetComponentInParent<Chunk>());
+                }
+
+                foreach (Chunk chunk in chunks)
+                {
+                    shader.SetTexture(0, "Map", chunk.map);
+                    shader.SetVector("pos", hit.point - chunk.transform.position);
+                    shader.SetFloat("dist", Distance);
+                    shader.SetFloat("power", -power);
+                    shader.SetInt("scale", size);
+                    shader.Dispatch(0, Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
+                    chunk.UpdateMap(size);
+                }
+
+
+            }
+        }
     }
+
+    
 }

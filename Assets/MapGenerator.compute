@@ -17,7 +17,7 @@ float size;
 int octaves;
 uint scale;
 
-RWStructuredBuffer<float4> Map;
+RWTexture3D<float> Map;
 
 int to1D(int x, int y, int z)
 {
@@ -53,7 +53,7 @@ void GenMap(uint3 id : SV_DispatchThreadID)
         a *= per;
     }
 
-    Map[to1D(id.x, id.y, id.z)] = float4(coords.xyz - offset, val);
+    Map[id.xyz] = val;
 }
 
 

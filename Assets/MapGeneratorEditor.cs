@@ -15,7 +15,7 @@ public class MapGeneratorEditor : Editor
 		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("Generate Map"))
 		{
-			myScript.GenMap();
+			//myScript.GenMap();
 		}
         if (GUILayout.Button("Generate Mesh"))
         {

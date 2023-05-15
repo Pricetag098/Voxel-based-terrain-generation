@@ -13,8 +13,8 @@ struct Triangle
     float3 c;
 };
 
-
-RWStructuredBuffer<float4> points;
+RWTexture3D<float> points;
+//RWStructuredBuffer<float4> points;
 AppendStructuredBuffer<Triangle> Tris;
 
 
@@ -39,14 +39,15 @@ void Triangulate(uint3 id : SV_DispatchThreadID)
 
     float4 cubeCorners[8] = 
     {
-        points[to1D(id.x    ,id.y    ,id.z    )],
-        points[to1D(id.x + 1,id.y    ,id.z    )],
-        points[to1D(id.x + 1,id.y    ,id.z + 1)],
-        points[to1D(id.x    ,id.y    ,id.z + 1)],
-        points[to1D(id.x    ,id.y + 1,id.z    )],
-        points[to1D(id.x + 1,id.y + 1,id.z    )],
-        points[to1D(id.x + 1,id.y + 1,id.z + 1)],
-        points[to1D(id.x    ,id.y + 1,id.z + 1)]
+        float4(id.x    ,id.y    ,id.z    , points[float3(id.x    ,id.y    ,id.z    )]),
+        float4(id.x + 1,id.y    ,id.z    , points[float3(id.x + 1,id.y    ,id.z    )]),
+        float4(id.x + 1,id.y    ,id.z + 1, points[float3(id.x + 1,id.y    ,id.z + 1)]),
+        float4(id.x    ,id.y    ,id.z + 1, points[float3(id.x    ,id.y    ,id.z + 1)]),
+
+        float4(id.x    ,id.y + 1,id.z    , points[float3(id.x    ,id.y + 1,id.z    )]),
+        float4(id.x + 1,id.y + 1,id.z    , points[float3(id.x + 1,id.y + 1,id.z    )]),
+        float4(id.x + 1,id.y + 1,id.z + 1, points[float3(id.x + 1,id.y + 1,id.z + 1)]),
+        float4(id.x    ,id.y + 1,id.z + 1, points[float3(id.x    ,id.y + 1,id.z + 1)])
     };
 
     int cubeIndex = 0;

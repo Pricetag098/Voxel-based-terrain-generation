@@ -9,9 +9,10 @@
 
 float3 pos;
 float dist;
+float power;
 uint scale;
 
-RWStructuredBuffer<float4> Map;
+RWTexture3D<float> Map;
 
 int to1D(int x, int y, int z)
 {
@@ -34,15 +35,15 @@ void GenMap(uint3 id : SV_DispatchThreadID)
     {
         return;
     }
-    float3 coords = Map[to1D(id.x,id.y,id.z)].xyz;
+    float3 coords = (float3)id;
     // TODO: insert actual code here!
-    float val = Map[to1D(id.x, id.y, id.z)].w;
+    float val = Map[id.xyz];
     if (distance(coords, pos) < dist)
     {
-        val += 1/ distance(coords, pos);
+        val += 1/ distance(coords, pos) * power;
     }
 
-    Map[to1D(id.x, id.y, id.z)] = float4(coords.xyz, val);
+    Map[id.xyz] = val;
 }
 
 

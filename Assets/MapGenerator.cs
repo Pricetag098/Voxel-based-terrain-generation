@@ -12,38 +12,47 @@ public class MapGenerator : MonoBehaviour
     public int octaves = 1;
     public Vector4[] map;
     public ComputeShader mapGenerator;
-    ComputeBuffer buffer;
+    Vector3 randOffset;
     
     private void Start()
     {
-        buffer = new ComputeBuffer((size) * size * size, 4 * 4);
+        randOffset = Vector3.one;
+        randOffset.y = 0;
+        randOffset *= Random.value * 100000;
         
     }
-    public void GenMap()
-    {
-        map = new Vector4[size * size * size];
-        buffer = GetMap(localOffset);
-        buffer.GetData(map);
-    }
+    //public void GenMap()
+    //{
+    //    map = new Vector4[size * size * size];
+    //    buffer = GetMap(localOffset);
+    //    buffer.GetData(map);
+    //}
 
-    public ComputeBuffer GetMap(Vector3 offset)
+    public RenderTexture GetMap(Vector3 offset)
     {
+        RenderTexture rt = new RenderTexture(size, size, 0,RenderTextureFormat.RFloat);
+        rt.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
+        rt.volumeDepth = size;
+        rt.enableRandomWrite = true;
+        rt.Create();
+
+
         map = new Vector4[size * size * size];
         int kernel =
         mapGenerator.FindKernel("GenMap");
-        buffer.SetData(map);
-        mapGenerator.SetBuffer(kernel, "Map", buffer);
+        
+        mapGenerator.SetTexture(kernel, "Map", rt);
         mapGenerator.SetFloat("freq", freq);
         mapGenerator.SetFloat("amp", amp);
         mapGenerator.SetFloat("la", la);
-        mapGenerator.SetVector("offset", offset);
+        mapGenerator.SetVector("offset", offset + randOffset);
         mapGenerator.SetFloat("per", per);
         mapGenerator.SetInt("octaves", octaves);
         //mapGenerator.SetFloat("cutoff", cutoff);
         mapGenerator.SetInt("scale", size);
         mapGenerator.Dispatch(kernel, Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
 
-        return buffer;
+        return rt;
     }
 
     public void GenMesh()
@@ -52,21 +61,21 @@ public class MapGenerator : MonoBehaviour
         MarchingCubes2 marchingCubes2 = GetComponent<MarchingCubes2>();
         if(marchingCubes2 != null)
         {
-            marchingCubes2.run(buffer,size);
+            //marchingCubes2.run(buffer,size);
         }
         else
         {
             MarchingCubes marchingCubes = GetComponent<MarchingCubes>();
             if(marchingCubes != null)
             {
-                buffer.GetData(map);
+                //buffer.GetData(map);
                 marchingCubes.run(map,size);
             }
         }
     }
     public void DisposeBuffers()
     {
-        buffer.Dispose();
+        //buffer.Dispose();
     }
     
 }
