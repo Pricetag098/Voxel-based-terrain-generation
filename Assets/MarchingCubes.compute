@@ -13,7 +13,7 @@ struct Triangle
     float3 c;
 };
 
-RWTexture3D<float> points;
+RWTexture3D<half> points;
 //RWStructuredBuffer<float4> points;
 AppendStructuredBuffer<Triangle> Tris;
 

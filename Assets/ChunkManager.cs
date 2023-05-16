@@ -42,9 +42,9 @@ public class ChunkManager : MonoBehaviour
         chunkGo.layer = gameObject.layer;
         Chunk chunk = chunkGo.GetComponent<Chunk>();
         chunk.chunkIndex = new Vector3Int(x, y, z);
-        chunk.map = mapGenerator.GetMap(new Vector3(x, y, z) * offset + baseOffset);
-        chunk.UpdateMap(chunkSize);
-        maps[chunk.chunkIndex] = chunk.map;
+        chunk.map = GetMap(new Vector3(x,y,z));
+        chunk.SetMapAndPrune(chunkSize);
+        
         await Task.CompletedTask;
     }
 
@@ -53,5 +53,8 @@ public class ChunkManager : MonoBehaviour
     {
         
     }
-    
+    public RenderTexture GetMap(Vector3 pos)
+    {
+        return mapGenerator.GetMap(pos * offset + baseOffset);
+    }
 }

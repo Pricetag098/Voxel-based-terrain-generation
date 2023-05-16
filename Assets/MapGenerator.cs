@@ -28,14 +28,20 @@ public class MapGenerator : MonoBehaviour
     //    buffer.GetData(map);
     //}
 
-    public RenderTexture GetMap(Vector3 offset)
+    public static RenderTexture CreateRt(int _size)
     {
-        RenderTexture rt = new RenderTexture(size, size, 0,RenderTextureFormat.RFloat);
+        RenderTexture rt = new RenderTexture(_size, _size, 0, RenderTextureFormat.RHalf);
         rt.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
-        rt.volumeDepth = size;
+        rt.volumeDepth = _size;
         rt.enableRandomWrite = true;
         rt.Create();
+        return rt;
+    }
 
+    public RenderTexture GetMap(Vector3 offset)
+    {
+
+        RenderTexture rt = CreateRt(size);
 
         map = new Vector4[size * size * size];
         int kernel =
@@ -58,14 +64,14 @@ public class MapGenerator : MonoBehaviour
     public void GenMesh()
     {
         
-        MarchingCubes2 marchingCubes2 = GetComponent<MarchingCubes2>();
+        MarchingCubes marchingCubes2 = GetComponent<MarchingCubes>();
         if(marchingCubes2 != null)
         {
             //marchingCubes2.run(buffer,size);
         }
         else
         {
-            MarchingCubes marchingCubes = GetComponent<MarchingCubes>();
+            MarchingCubesOld marchingCubes = GetComponent<MarchingCubesOld>();
             if(marchingCubes != null)
             {
                 //buffer.GetData(map);

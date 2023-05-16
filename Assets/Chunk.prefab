@@ -49,8 +49,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2941860d113b8f2468aa62acb4933744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: []
   chunkIndex: {x: 0, y: 0, z: 0}
+  map: {fileID: 0}
 --- !u!114 &4575469587257070327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,5 +172,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 50, y: 50, z: 50}
-  m_Center: {x: 25, y: 25, z: 25}
+  m_Size: {x: 31, y: 31, z: 31}
+  m_Center: {x: 15.5, y: 15.5, z: 15.5}

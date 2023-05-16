@@ -9,26 +9,31 @@ using UnityEngine.Jobs;
 public class Chunk : MonoBehaviour
 {
     //[HideInInspector]public Vector4[] map;
-    MarchingCubes2 marchingCubes;
+    MarchingCubes marchingCubes;
     public Vector3Int chunkIndex;
     public RenderTexture map;
     
     private void Awake()
     {
-        marchingCubes = GetComponent<MarchingCubes2>();
+        marchingCubes = GetComponent<MarchingCubes>();
         
     }
 
-
-    public void UpdateMap(int size)
+    private void Start()
     {
         
-        marchingCubes.run(map, size);
-        
+    }
 
+    public void SetMapAndPrune(int size)
+    {
+        if (!marchingCubes.Run(map, size))
+            map = null;
+    }
+    public void UpdateMap(int size)
+    {
+        marchingCubes.Run(map, size);
+            
 
-        
-        
     }
 
     
@@ -41,21 +46,6 @@ public class Chunk : MonoBehaviour
         //buffer.GetData(map);
         //await Task.CompletedTask;
     }
-
-    struct GetDataJob : IJob 
-    {
-        public ComputeBuffer buffer;
-        public int size;
-        //public Chunk chunk;
-        public NativeArray<Vector4> _map;
-        public void Execute()
-        {
-            if (buffer == null)
-                return;
-            Vector4[] map = new Vector4[size * size * size];
-            buffer.GetData(map);
-            _map.CopyFrom(map);
-        }
-    }
+    
 
 }

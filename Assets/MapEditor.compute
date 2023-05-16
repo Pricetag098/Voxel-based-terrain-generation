@@ -12,7 +12,7 @@ float dist;
 float power;
 uint scale;
 
-RWTexture3D<float> Map;
+RWTexture3D<half> Map;
 
 int to1D(int x, int y, int z)
 {
