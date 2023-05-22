@@ -15,6 +15,7 @@ float3 offset;
 float per;
 float size;
 int octaves;
+float power;
 uint scale;
 
 RWTexture3D<half> Map;
@@ -30,7 +31,7 @@ int3 to3D(int idx)
     idx -= (z * scale * scale);
     int y = idx / scale;
     int x = idx % scale;
-    return int3 ( x, y, z );
+    return int3 (x, y, z);
 }
 
 [numthreads(8, 8, 8)]
@@ -48,12 +49,12 @@ void GenMap(uint3 id : SV_DispatchThreadID)
     float a = amp;
     for (int i = 0; i < octaves; i++)
     {
-        val += (((SimplexNoise((coords.xz / (float)scale) * f) * a) + 1) / 2) * 1.0 - (coords.y / (float)scale);
+        val += ((SimplexNoise(coords.xyz * f)+1)/2) * a;
         f *= la;
         a *= per;
     }
-
-    Map[id.xyz] = val;
+    
+    Map[id.xyz] -= val * power * (1.0 - (coords.y / (float)scale));
 }
 
 

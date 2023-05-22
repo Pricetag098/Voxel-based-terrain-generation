@@ -155,14 +155,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  freq: 1
-  amp: 0.5
   localOffset: {x: 0, y: 0, z: 0}
-  la: 0.5
-  per: 2
-  octaves: 8
-  map: []
-  mapGenerator: {fileID: 7200000, guid: 6a859718e4b779646878c2fdb039efcd, type: 3}
+  mapGeneratorPasses:
+  - {fileID: 11400000, guid: 22ea900e2023808479c0bbf4fad0bdf2, type: 2}
+  - {fileID: 11400000, guid: bf8dec434e8ecc04d9307f77183f5195, type: 2}
 --- !u!114 &161128584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,7 +419,7 @@ GameObject:
   - component: {fileID: 1611153646}
   - component: {fileID: 1611153645}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -441,21 +437,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: deebc9d7a44772647871949e6f808f62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravSource: {x: 0, y: -9.8, z: 0}
+  gravSource: {x: 0, y: -29.4, z: 0}
   head: {fileID: 1845023304}
   cam: {fileID: 963194228}
   G: 1
-  acceleation: 10
-  slowForce: 10
-  maxSpeed: 10
+  acceleation: 30
+  slowForce: 20
+  maxSpeed: 25
   jetpack: 10
   gcRad: 0.48
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   gcOffset: -0.54
-  grounded: 0
-  jumpForce: 10
+  grounded: 1
+  jumpForce: 30
 --- !u!54 &1611153646
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -661,11 +657,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 25
-  freq: 1
-  amp: 1
   localOffset: {x: 0, y: 0, z: 0}
-  la: 1
-  per: 1
-  octaves: 1
-  map: []
-  mapGenerator: {fileID: 7200000, guid: 6a859718e4b779646878c2fdb039efcd, type: 3}
+  mapGeneratorPasses: []
