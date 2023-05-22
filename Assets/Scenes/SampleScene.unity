@@ -175,7 +175,8 @@ MonoBehaviour:
   offset: 31
   baseOffset: {x: 0, y: -250, z: 0}
   chunkSize: 32
-  size: {x: 15, y: 15, z: 15}
+  bounds: {x: 10, y: 10, z: 10}
+  player: {fileID: 1611153644}
 --- !u!4 &161128585
 Transform:
   m_ObjectHideFlags: 0
