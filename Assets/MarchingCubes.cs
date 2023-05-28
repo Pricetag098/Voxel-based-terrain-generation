@@ -104,7 +104,8 @@ public class MarchingCubes : MonoBehaviour
             triCountBuffer.Dispose();
             return true;
         }
-        
+        meshFilter.mesh = null;
+        meshCollider.sharedMesh = null;
         triBuffer.Dispose();
         triCountBuffer.Dispose();
         return false;

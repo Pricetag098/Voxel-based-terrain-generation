@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shader: {fileID: 7200000, guid: 6a859718e4b779646878c2fdb039efcd, type: 3}
   freq: 0.1
-  amp: 5
+  amp: 8
   la: 2
   per: 0.5
   octaves: 10

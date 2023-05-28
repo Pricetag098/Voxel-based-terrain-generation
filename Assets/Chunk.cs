@@ -12,7 +12,8 @@ public class Chunk : MonoBehaviour
     MarchingCubes marchingCubes;
     public Vector3Int chunkIndex;
     public RenderTexture map;
-    
+    public ChunkManager chunkManager;
+
     private void Awake()
     {
         marchingCubes = GetComponent<MarchingCubes>();
@@ -27,18 +28,24 @@ public class Chunk : MonoBehaviour
     public void SetMapAndPrune(int size)
     {
         if (!marchingCubes.Run(map, size))
+		{
+            chunkManager.mapGenerator.ReturnMap(map);
             map = null;
+        }
+            
     }
     public void UpdateMap(int size)
     {
         marchingCubes.Run(map, size);
-            
-
     }
 
-    
+	public void UpdateCollider()
+	{
+		
+	}
 
-    void GetData(ComputeBuffer buffer, int size)
+
+	void GetData(ComputeBuffer buffer, int size)
     {
         if (buffer == null)
             return;

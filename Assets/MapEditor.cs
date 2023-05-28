@@ -36,7 +36,7 @@ public class MapEditor : MonoBehaviour
             EditMap(-power,0);
         }
     }
-
+    
     void EditMap(float power,float minDist)
     {
         RaycastHit hit;
@@ -59,17 +59,21 @@ public class MapEditor : MonoBehaviour
                 RenderTexture map = chunk.map;
                 if (map == null)
                 {
-                    map = chunkManager.GetMap(chunk.chunkIndex);
+                    map = chunkManager.GetMap(chunk.map,chunk.chunkIndex);
                     chunk.map = map;
                     
                 }
-                shader.SetTexture(0, "Map", map);
-                shader.SetVector("pos", hit.point - chunk.transform.position);
-                shader.SetFloat("dist", Distance);
-                shader.SetFloat("power", power * Time.deltaTime);
-                shader.SetInt("scale", size);
-                shader.Dispatch(0, Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
-                chunk.UpdateMap(size);
+                if(map != null)
+				{
+                    shader.SetTexture(0, "Map", map);
+                    shader.SetVector("pos", hit.point - chunk.transform.position);
+                    shader.SetFloat("dist", Distance);
+                    shader.SetFloat("power", power * Time.deltaTime);
+                    shader.SetInt("scale", size);
+                    shader.Dispatch(0, Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8), Mathf.CeilToInt((float)(size + 1) / 8));
+                    chunk.UpdateMap(size);
+				}
+                
             }
 
 
