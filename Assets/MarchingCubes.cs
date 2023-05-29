@@ -5,7 +5,7 @@ public class MarchingCubes : MonoBehaviour
 {
     public float cutoff = 0;
     public ComputeShader Shader;
-    
+    Chunk chunk;
     Mesh mesh;
     MeshFilter meshFilter;
     MeshCollider meshCollider;
@@ -17,7 +17,7 @@ public class MarchingCubes : MonoBehaviour
         meshFilter = GetComponent<MeshFilter>();
         meshCollider = GetComponent<MeshCollider>();
         mesh = new Mesh();
-        
+        chunk = GetComponent<Chunk>();
         mesh.MarkDynamic();
     }
 
@@ -97,20 +97,30 @@ public class MarchingCubes : MonoBehaviour
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
             meshFilter.mesh = mesh;
+            chunk.state = ChunkState.meshUpdated;
 
-            meshCollider.cookingOptions = 0;
-            meshCollider.sharedMesh = mesh;
             triBuffer.Dispose();
             triCountBuffer.Dispose();
+            
             return true;
         }
         meshFilter.mesh = null;
         meshCollider.sharedMesh = null;
         triBuffer.Dispose();
         triCountBuffer.Dispose();
+        chunk.state = ChunkState.physicsUpdated;
         return false;
     }
+    public void PhysicsUpdate()
+    {
 
-
+        meshCollider.cookingOptions = 0;
+        meshCollider.sharedMesh = mesh;
+        chunk.state = ChunkState.physicsUpdated;
+    }
+    public void Unload()
+    {
+        meshFilter.mesh = null;
+    }
 
 }

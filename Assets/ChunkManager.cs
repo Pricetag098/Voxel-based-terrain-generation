@@ -7,7 +7,7 @@ public class ChunkManager : MonoBehaviour
 {
     public bool staticMap = false;
     [SerializeField] GameObject chunkPrefab;
-    
+    [SerializeField] int maxChunksUpdated = 5;
     Dictionary<Vector3Int, Chunk> existingChunks = new Dictionary<Vector3Int, Chunk>();
     Dictionary<Vector3Int, RenderTexture> maps = new Dictionary<Vector3Int, RenderTexture>();
     public float offset;
@@ -20,7 +20,7 @@ public class ChunkManager : MonoBehaviour
     public GameObject player;
     List<Chunk> chunks = new List<Chunk>();
     Queue<Chunk> chunkPool = new Queue<Chunk>();
-    
+    Queue<Chunk> placeQueue  = new Queue<Chunk>();
     // Start is called before the first frame update
     void Start()
     {
@@ -52,6 +52,8 @@ public class ChunkManager : MonoBehaviour
         
         chunk.chunkIndex = index;
         chunk.map = GetMap(chunk.map, chunk.chunkIndex);
+        chunk.state = ChunkState.placing;
+        existingChunks.Add(chunk.chunkIndex, chunk);
         //if (maps.ContainsKey(chunk.chunkIndex))
         //{
         //    if(maps[chunk.chunkIndex] == null)
@@ -67,19 +69,25 @@ public class ChunkManager : MonoBehaviour
         //    chunk.map = GetMap((Vector3)index);
         //    maps.Add(chunk.chunkIndex, chunk.map);
         //}
-        if(chunk.map != null)
-		{
+        placeQueue.Enqueue(chunk);
+        
+        
+        
+    }
+
+    void UpdateChunkMesh(Chunk chunk)
+    {
+        if (chunk.map != null)
+        {
             chunks.Add(chunk);
-            existingChunks.Add(chunk.chunkIndex, chunk);
+            
             chunk.SetMapAndPrune(chunkSize);
         }
-		else
-		{
+        else
+        {
+            existingChunks.Remove(chunk.chunkIndex);
             chunkPool.Enqueue(chunk);
-		}
-        
-        
-        
+        }
     }
 
     // Update is called once per frame
@@ -97,6 +105,14 @@ public class ChunkManager : MonoBehaviour
             int maxY = playerChunkCoord.y + bounds.y;
             int maxZ = playerChunkCoord.z + bounds.z;
             int minZ = playerChunkCoord.z - bounds.z;
+
+            int maxXPhysics = playerChunkCoord.x + bounds.x/2;
+            int minXPhysics = playerChunkCoord.x - bounds.x/2;
+            int minYPhysics = playerChunkCoord.y - bounds.y/2;
+            int maxYPhysics = playerChunkCoord.y + bounds.y/2;
+            int maxZPhysics = playerChunkCoord.z + bounds.z/2;
+            int minZPhysics = playerChunkCoord.z - bounds.z/2;
+
             //unload all out of bounds chunks
             for (int i = chunks.Count - 1; i >= 0; i--)
             {
@@ -123,6 +139,22 @@ public class ChunkManager : MonoBehaviour
                         Vector3Int chunkCoord = new Vector3Int(x, y, z) + playerChunkCoord;
                         if (existingChunks.ContainsKey(chunkCoord))
                         {
+                            Chunk chunk = existingChunks[chunkCoord];
+                            if(chunk.state == ChunkState.meshUpdated)
+                            {
+                                if(
+                                    chunk.chunkIndex.x > minXPhysics &&
+                                    chunk.chunkIndex.x < maxXPhysics &&
+                                    chunk.chunkIndex.y > minYPhysics &&
+                                    chunk.chunkIndex.y < maxYPhysics &&
+                                    chunk.chunkIndex.z > minZPhysics &&
+                                    chunk.chunkIndex.z < maxZPhysics
+                                    )
+                                {
+                                    chunk.PhysicsUpdate();
+                                }
+                                
+                            }
                             continue;
                         }
                         if (chunkPool.Count > 0)
@@ -130,6 +162,14 @@ public class ChunkManager : MonoBehaviour
                     }
                 }
             }
+        }
+
+        for(int i = 0; i < maxChunksUpdated; i++)
+        {
+            if (i >= placeQueue.Count)
+                break;
+            Chunk chunk = placeQueue.Dequeue();
+            UpdateChunkMesh(chunk);
         }
         
     }
@@ -139,6 +179,8 @@ public class ChunkManager : MonoBehaviour
         
         chunkPool.Enqueue(chunk);
         existingChunks.Remove(chunk.chunkIndex);
+        chunk.Unload();
+        
         //chunk.gameObject.SetActive(false);
     }
 

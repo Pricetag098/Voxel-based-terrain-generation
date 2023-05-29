@@ -18,4 +18,4 @@ MonoBehaviour:
   la: 2
   per: 0.2
   octaves: 10
-  power: 10
+  power: 5

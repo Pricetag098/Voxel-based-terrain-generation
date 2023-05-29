@@ -1,11 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
-using UnityEngine.Jobs;
+
+
+public enum ChunkState {
+    unloaded,
+    placing,
+    meshUpdated,
+    physicsUpdated
+}
+
 public class Chunk : MonoBehaviour
 {
     //[HideInInspector]public Vector4[] map;
@@ -13,7 +15,7 @@ public class Chunk : MonoBehaviour
     public Vector3Int chunkIndex;
     public RenderTexture map;
     public ChunkManager chunkManager;
-
+    public ChunkState state;
     private void Awake()
     {
         marchingCubes = GetComponent<MarchingCubes>();
@@ -53,6 +55,15 @@ public class Chunk : MonoBehaviour
         //buffer.GetData(map);
         //await Task.CompletedTask;
     }
+    public void PhysicsUpdate()
+    {
+        marchingCubes.PhysicsUpdate();
+    }
     
+    public void Unload()
+    {
+        state = ChunkState.unloaded;
+        marchingCubes.Unload();
+    }
 
 }
