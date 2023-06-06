@@ -55,7 +55,7 @@ public class MapEditor : MonoBehaviour
 
             foreach (Chunk chunk in chunks)
             {
-                
+                chunk.edited = true;
                 RenderTexture map = chunk.map;
                 if (map == null)
                 {

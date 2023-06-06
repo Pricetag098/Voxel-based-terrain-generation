@@ -16,6 +16,7 @@ public class Chunk : MonoBehaviour
     public RenderTexture map;
     public ChunkManager chunkManager;
     public ChunkState state;
+    public bool edited = false;
     private void Awake()
     {
         marchingCubes = GetComponent<MarchingCubes>();
@@ -62,6 +63,7 @@ public class Chunk : MonoBehaviour
     
     public void Unload()
     {
+        edited = false;
         state = ChunkState.unloaded;
         marchingCubes.Unload();
     }

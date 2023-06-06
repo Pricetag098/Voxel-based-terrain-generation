@@ -179,6 +179,11 @@ public class ChunkManager : MonoBehaviour
         
         chunkPool.Enqueue(chunk);
         existingChunks.Remove(chunk.chunkIndex);
+        if (chunk.edited)
+        {
+            Debug.Log("Unloading Edited Chunk");
+        }
+
         chunk.Unload();
         
         //chunk.gameObject.SetActive(false);

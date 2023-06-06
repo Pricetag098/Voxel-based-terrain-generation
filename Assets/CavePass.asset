@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: CavePass
   m_EditorClassIdentifier: 
   shader: {fileID: 7200000, guid: e01de10125f5ede4596f98a658a3dd2c, type: 3}
-  freq: 0.001
+  freq: 0.01
   amp: 1
   la: 2
-  per: 0.2
+  per: 0.5
   octaves: 10
   power: 5
