@@ -17,8 +17,10 @@ public class MapGenerator : MonoBehaviour
     private void Awake()
 	{
         ChunkManager chunkManager = GetComponent<ChunkManager>();
-
-        if(chunkManager != null)
+        randOffset = Vector3.one;
+        randOffset.y = 0;
+        randOffset *= Random.value * 100000;
+        if (chunkManager != null)
 		{
             size = chunkManager.chunkSize;
 
@@ -33,9 +35,7 @@ public class MapGenerator : MonoBehaviour
     }
     private void Start()
     {
-        randOffset = Vector3.one;
-        randOffset.y = 0;
-        randOffset *= Random.value * 100000;
+        
         
     }
     

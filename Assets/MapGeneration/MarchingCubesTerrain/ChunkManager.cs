@@ -43,7 +43,19 @@ public class ChunkManager : MonoBehaviour
                 }
             }
         }
-        
+        int chunkCount = placeQueue.Count;
+        for (int i = 0; i < chunkCount; i++)
+        {
+            //if (i >= placeQueue.Count)
+            //    break;
+            Chunk chunk = placeQueue.Dequeue();
+            UpdateChunkMesh(chunk);
+            //chunk.PhysicsUpdate();
+        }
+
+
+
+
     }
 
     void PlaceChunk(Chunk chunk, Vector3Int index)

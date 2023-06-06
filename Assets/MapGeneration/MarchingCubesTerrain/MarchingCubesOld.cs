@@ -15,7 +15,7 @@ public class MarchingCubesOld : MonoBehaviour
 
     CubeGrid cg;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();
